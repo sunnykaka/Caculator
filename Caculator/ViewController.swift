@@ -14,7 +14,7 @@ class ViewController: UIViewController {
     
     var isInInitZeroState = true
     
-    var operandStack: Array<Double> = []
+    let calculatorBrain = CalculatorBrain()
     
     var displayValue: Double {
         get {
@@ -39,51 +39,21 @@ class ViewController: UIViewController {
         if isInInitZeroState {
             return
         }
-        operandStack.append(displayValue)
+        calculatorBrain.pushOperand(displayValue)
         isInInitZeroState = true
-        NSLog("operandStack: \(operandStack)")
     }
     
     @IBAction func operate(sender: UIButton) {
         enter()
 
         let operatorName = sender.currentTitle!
-        switch operatorName {
-        case "+":
-            performOperation({$0 + $1})
-        case "−":
-            performOperation({$1 - $0})
-        case "×":
-            performOperation({$0 * $1})
-        case "÷":
-            performOperation({$1 + $0})
-        case "√":
-            performOperation({sqrt($0)})
-        default:
-            break
+        if let result = calculatorBrain.performOperation(operatorName) {
+            displayValue = result
+        } else {
+            displayValue = 0
         }
         
         
-    }
-    
-    private func performOperation(operation: (Double, Double) -> Double) {
-        if operandStack.count < 2 {
-            return
-        }
-        let result = operation(operandStack.removeLast(), operandStack.removeLast())
-        operandStack.append(result)
-        displayValue = result
-    }
-    
-
-    private func performOperation(operation: Double -> Double) {
-        if operandStack.count < 1 {
-            return
-        }
-        let result = operation(operandStack.removeLast())
-        operandStack.append(result)
-        displayValue = result
-
     }
     
 }
